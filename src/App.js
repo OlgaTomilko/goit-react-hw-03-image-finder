@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import axios from "axios";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import SearchBar from "./components/Searchbar/Searchbar";
+import ImageGallery from "./components/ImageGallery/ImageGallery";
+import "./App.css";
+
+const ApiKey = "19902573-b9fa82d62327bd625e4b4b636";
+// https://pixabay.com/api/?q=что_искать&page=номер_страницы&key=твой_ключ&image_type=photo&orientation=horizontal&per_page=12
+
+class App extends Component {
+  state = {
+    images: [],
+    page: 1,
+    showModal: false,
+  };
+
+  componentDidMount() {}
+
+  onChangeQuery = (query) => {
+    axios
+      .get(
+        `https://pixabay.com/api/?q=${query}&page=${this.state.page}&key=${ApiKey}&image_type=photo&orientation=horizontal&per_page=12`
+      )
+      .then((response) => this.setState({ images: response.data.hits }));
+  };
+
+  render() {
+    return (
+      <div className="App">
+        <SearchBar onSubmit={this.onChangeQuery} />
+        <ImageGallery images={this.state.images} />
+      </div>
+    );
+  }
 }
 
 export default App;
