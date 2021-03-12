@@ -5,6 +5,7 @@ import SearchBar from "./components/Searchbar/Searchbar";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
 import Button from "./components/Button/Button";
 import Loader from "./components/Loader/Loader";
+import Modal from "./components/Modal/Modal";
 
 import "./App.css";
 
@@ -17,6 +18,7 @@ class App extends Component {
     query: "",
     isLoading: false,
     showModal: false,
+    currentImg: [],
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -52,14 +54,34 @@ class App extends Component {
     return this.state.images.length > 0;
   };
 
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({ showModal: !showModal }));
+  };
+
+  handleImageClick = (index) => {
+    this.setState({
+      currentImg: this.state.images.filter(({ id }) => id === Number(index)),
+    });
+    this.toggleModal();
+  };
+
   render() {
     return (
       <div className="App">
         <SearchBar onSubmit={this.onChangeQuery} />
-        <ImageGallery images={this.state.images} />
+        <ImageGallery
+          images={this.state.images}
+          onImageClick={this.handleImageClick}
+        />
         {this.state.isLoading && <Loader />}
         {this.onLoadMoreButtonShow() && !this.state.isLoading && (
           <Button onSubmit={this.fetchImages} />
+        )}
+        {this.state.showModal && (
+          <Modal
+            onClose={this.toggleModal}
+            img={this.state.currentImg[0].largeImageURL}
+          ></Modal>
         )}
       </div>
     );

@@ -9,6 +9,7 @@ class ImageGalleryItem extends Component {
           src={this.props.imageURL}
           alt=""
           className="ImageGalleryItem-image"
+          id={this.props.id}
         />
       </li>
     );
