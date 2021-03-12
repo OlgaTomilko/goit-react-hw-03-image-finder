@@ -4,16 +4,18 @@ import axios from "axios";
 import SearchBar from "./components/Searchbar/Searchbar";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
 import Button from "./components/Button/Button";
+import Loader from "./components/Loader/Loader";
+
 import "./App.css";
 
 const ApiKey = "19902573-b9fa82d62327bd625e4b4b636";
-// https://pixabay.com/api/?q=что_искать&page=номер_страницы&key=твой_ключ&image_type=photo&orientation=horizontal&per_page=12
 
 class App extends Component {
   state = {
     images: [],
     page: 1,
     query: "",
+    isLoading: false,
     showModal: false,
   };
 
@@ -32,6 +34,7 @@ class App extends Component {
   };
 
   fetchImages = () => {
+    this.setState({ isLoading: true });
     axios
       .get(
         `https://pixabay.com/api/?q=${this.state.query}&page=${this.state.page}&key=${ApiKey}&image_type=photo&orientation=horizontal&per_page=12`
@@ -41,7 +44,8 @@ class App extends Component {
           images: [...prevState.images, ...response.data.hits],
           page: prevState.page + 1,
         }))
-      );
+      )
+      .finally(() => this.setState({ isLoading: false }));
   };
 
   onLoadMoreButtonShow = () => {
@@ -53,7 +57,10 @@ class App extends Component {
       <div className="App">
         <SearchBar onSubmit={this.onChangeQuery} />
         <ImageGallery images={this.state.images} />
-        {this.onLoadMoreButtonShow() && <Button onSubmit={this.fetchImages} />}
+        {this.state.isLoading && <Loader />}
+        {this.onLoadMoreButtonShow() && !this.state.isLoading && (
+          <Button onSubmit={this.fetchImages} />
+        )}
       </div>
     );
   }
