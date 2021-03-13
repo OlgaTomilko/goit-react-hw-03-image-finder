@@ -1,15 +1,11 @@
 import React, { Component } from "react";
-import axios from "axios";
-
+import imagesApi from "./services/images-api";
 import SearchBar from "./components/Searchbar/Searchbar";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
 import Button from "./components/Button/Button";
 import Loader from "./components/Loader/Loader";
 import Modal from "./components/Modal/Modal";
-
 import "./App.css";
-
-const ApiKey = "19902573-b9fa82d62327bd625e4b4b636";
 
 class App extends Component {
   state = {
@@ -36,17 +32,20 @@ class App extends Component {
   };
 
   fetchImages = () => {
+    const { query, page } = this.state;
+    const options = { query, page };
+
     this.setState({ isLoading: true });
-    axios
-      .get(
-        `https://pixabay.com/api/?q=${this.state.query}&page=${this.state.page}&key=${ApiKey}&image_type=photo&orientation=horizontal&per_page=12`
-      )
+
+    imagesApi
+      .fetchImages(options)
       .then((response) =>
         this.setState((prevState) => ({
           images: [...prevState.images, ...response.data.hits],
           page: prevState.page + 1,
         }))
       )
+      .catch((error) => console.log(error))
       .finally(() => this.setState({ isLoading: false }));
   };
 
